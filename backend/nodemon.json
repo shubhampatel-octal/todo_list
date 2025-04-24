@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src",
+    ".env"
+  ],
+  "ext": "ts,json,env",
+  "ignore": [
+    "src/**/*.spec.ts"
+  ],
+  "exec": "npx ts-node ./src/index.ts"
+}
