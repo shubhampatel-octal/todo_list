@@ -1,29 +1,30 @@
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import ImageBox from "../components/ImageBox";
-import ListTodos from "../components/ListTodos";
-import { ITodos } from "../type";
-import { useAuth } from "../context";
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
+import ImageBox from '../components/ImageBox';
+import ListTodos from '../components/ListTodos';
+import { ITodos } from '../type';
+import { useAuth } from '../context';
+import Sidebar from '../components/Sidebar';
 
 function Home() {
-  const [todo, setTodo] = useState("");
+  const [todo, setTodo] = useState('');
   const [todos, setTodos] = useState<ITodos[] | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isEdit, SetIsEdit] = useState({
     clicked: false,
-    todo: { title: "", _id: "" },
+    todo: { title: '', _id: '' },
   });
   const { user, setUser } = useAuth();
 
   useEffect(() => {
     try {
       const getData = async () => {
-        const responce = await fetch("http://localhost:3000/getitems", {
-          credentials: "include",
+        const responce = await fetch('http://localhost:3000/getitems', {
+          credentials: 'include',
         });
 
         if (responce.status !== 200) {
-          toast.error("Error getting data");
+          toast.error('Error getting data');
         }
 
         const data: ITodos[] = await responce.json();
@@ -36,13 +37,13 @@ function Home() {
       };
       getData();
     } catch (err) {
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
       console.log(err);
     }
   }, []);
 
   const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       buttonRef.current?.click();
     }
@@ -50,40 +51,38 @@ function Home() {
 
   const handleSubmit = async () => {
     try {
-      if (todo.trim() === "") {
-        toast.error("Please Enter Value");
+      if (todo.trim() === '') {
+        toast.error('Please Enter Value');
         return;
       }
 
-      if (
-        todos?.find((t) => t.title.toLowerCase() === todo.trim().toLowerCase())
-      ) {
-        toast.error("todo already added");
+      if (todos?.find((t) => t.title.toLowerCase() === todo.trim().toLowerCase())) {
+        toast.error('todo already added');
         return;
       }
 
-      const responce = await fetch("http://localhost:3000/additem", {
+      const responce = await fetch('http://localhost:3000/additem', {
         body: JSON.stringify({ todo: todo.trim() }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "POST",
+        credentials: 'include',
+        method: 'POST',
       });
 
       if (responce.status !== 200) {
-        toast.error("Error Adding data");
+        toast.error('Error Adding data');
         return;
       }
 
       const result = await responce.json();
 
       setTodos([...(todos || []), result]);
-      setTodo("");
-      toast.success("New Task Added To The List");
+      setTodo('');
+      toast.success('New Task Added To The List');
     } catch (err) {
       console.log(err);
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
     }
   };
 
@@ -94,43 +93,43 @@ function Home() {
 
   const handledeleteButton = async (id: string) => {
     try {
-      const responce = await fetch("http://localhost:3000/deleteitem", {
+      const responce = await fetch('http://localhost:3000/deleteitem', {
         body: JSON.stringify({ id }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "DELETE",
+        credentials: 'include',
+        method: 'DELETE',
       });
 
       if (responce.status !== 200) {
-        toast.error("Error Deleting data");
+        toast.error('Error Deleting data');
         return;
       }
 
       const result = await responce.json();
       setTodos(todos?.filter((t) => t._id !== result._id) || null);
 
-      toast.error("Task Removed");
+      toast.error('Task Removed');
     } catch (err) {
       console.log(err);
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
     }
   };
 
   const handleCheckItems = async (check: boolean, id: string) => {
     try {
-      const responce = await fetch("http://localhost:3000/checkitem", {
+      const responce = await fetch('http://localhost:3000/checkitem', {
         body: JSON.stringify({ check: check, id }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "PUT",
+        credentials: 'include',
+        method: 'PUT',
       });
 
       if (responce.status !== 200) {
-        toast.error("Error Checking data");
+        toast.error('Error Checking data');
         return;
       }
 
@@ -140,128 +139,136 @@ function Home() {
       setTodos(todos?.map((t) => (t._id === id ? result : t)) || null);
       SetIsEdit({
         clicked: false,
-        todo: { title: "", _id: "" },
+        todo: { title: '', _id: '' },
       });
-      setTodo("");
-      toast.success("Value Changed");
+      setTodo('');
+      toast.success('Value Changed');
     } catch (err) {
       console.log(err);
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
     }
   };
 
   const handleUpdate = async () => {
     try {
-      if (todo.trim() === "") {
-        toast.error("Please Enter Value");
+      if (todo.trim() === '') {
+        toast.error('Please Enter Value');
         return;
       }
 
-      const responce = await fetch("http://localhost:3000/edititem", {
+      const responce = await fetch('http://localhost:3000/edititem', {
         body: JSON.stringify({ todo, id: isEdit?.todo?._id }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "PUT",
+        credentials: 'include',
+        method: 'PUT',
       });
 
       if (responce.status !== 200) {
-        toast.error("Error Updating data");
+        toast.error('Error Updating data');
         return;
       }
 
       const result: ITodos = await responce.json();
       console.log(result);
 
-      setTodos(
-        todos?.map((t) => (t._id === isEdit.todo._id ? result : t)) || null
-      );
+      setTodos(todos?.map((t) => (t._id === isEdit.todo._id ? result : t)) || null);
       SetIsEdit({
         clicked: false,
-        todo: { title: "", _id: "" },
+        todo: { title: '', _id: '' },
       });
-      setTodo("");
-      toast.success("Value Changed");
+      setTodo('');
+      toast.success('Value Changed');
     } catch (err) {
       console.log(err);
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
     }
   };
 
   const handleClearItems = async () => {
     try {
-      const responce = await fetch("http://localhost:3000/clearitems", {
+      const responce = await fetch('http://localhost:3000/clearitems', {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include",
-        method: "DELETE",
+        credentials: 'include',
+        method: 'DELETE',
       });
 
       if (responce.status !== 200) {
-        toast.error("Error Clearing data");
+        toast.error('Error Clearing data');
         return;
       }
 
       setTodos(null);
-      toast.error("Empty List");
+      toast.error('Empty List');
     } catch (err) {
       console.log(err);
-      toast.error("somethis wrong");
+      toast.error('somethis wrong');
     }
   };
   const handleLogout = async () => {
-    await fetch("http://localhost:3000/logout", {
-      method: "POST",
-      credentials: "include",
+    await fetch('http://localhost:3000/logout', {
+      method: 'POST',
+      credentials: 'include',
     });
     setUser(null);
   };
 
   return (
     <>
-      <div>
-        <section className=" px-4 m-[8rem_auto_0] bg-white w-[90vw] max-w-[42rem] rounded-md transition-all duration-300 ease-linear shadow-[0_5px_15px_rgba(0,0,0,.2)]">
-          <div className="flex justify-between items-center py-4">
-            <div className="capitalize font-semibold text-lg">
-              Welcome {user?.username}
-            </div>
-            <button
-              className="py-1 px-2 flex justify-center border cursor-pointer rounded-sm border-amber-500 text-white hover:bg-white bg-amber-500 hover:text-amber-500 transition-all duration-300 ease-linear"
-              onClick={handleLogout}
-            >
-              logout
-            </button>
-          </div>
-          <div className="flex flex-row">
-            <input
-              className="w-full px-4 py-2 text-[1.2rem] bg-[#f0f0f0] border-[1px] border-[#f4ae00] focus:outline-amber-500 rounded-tl-sm rounded-bl-sm "
-              placeholder="Enter a new task to do"
-              value={todo}
-              onKeyDown={handleInputKeyPress}
-              onChange={(e) => setTodo(e.target.value)}
-            ></input>
-            <button
-              ref={buttonRef}
-              className="p-1 flex-[0_0_5rem] justify-center items-center text-[.85rem] font-bold rounded-tr-sm rounded-br-sm bg-[#ffc727] tracking-[2px] capitalize hover:text-white transition-all duration-300 ease-linear"
-              onClick={isEdit.clicked ? handleUpdate : handleSubmit}
-            >
-              {isEdit.clicked ? "Edit" : "Submit"}
-            </button>
-          </div>
-          {todos && (
-            <ListTodos
-              todos={todos}
-              handleEditButton={handleEditButton}
-              handledeleteButton={handledeleteButton}
-              handleClearItems={handleClearItems}
-              handleCheckItems={handleCheckItems}
-            />
-          )}
+      <Sidebar />
+      <div className="flex w-full justify-end">
+        <div className="min-h-screen w-[85%] scroll-auto px-4 py-10">
+          <section className="mx-auto w-[90vw] max-w-2xl rounded-xl bg-white px-6 py-6 shadow-lg transition-all duration-300 ease-in-out">
+            {/* Header */}
+            <div className="mb-4 flex items-center justify-between border-b pb-3">
+              <div className="text-lg font-semibold text-gray-800 capitalize">
+                Welcome, {user?.username}
+              </div>
 
-          <ImageBox />
-        </section>
+              <button
+                onClick={handleLogout}
+                className="rounded-md border border-red-500 bg-red-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-white hover:text-red-500"
+              >
+                Logout
+              </button>
+            </div>
+
+            {/* Input & Submit */}
+            <div className="mb-6 flex rounded-md shadow-sm">
+              <input
+                className="w-full rounded-l-md border border-amber-400 bg-gray-100 px-4 py-2 text-base focus:outline-amber-500"
+                placeholder="Enter a new task to do"
+                value={todo}
+                onKeyDown={handleInputKeyPress}
+                onChange={(e) => setTodo(e.target.value)}
+              />
+              <button
+                ref={buttonRef}
+                onClick={isEdit.clicked ? handleUpdate : handleSubmit}
+                className="rounded-r-md bg-yellow-400 px-5 text-sm font-bold tracking-wide text-white uppercase transition hover:bg-yellow-500"
+              >
+                {isEdit.clicked ? 'Edit' : 'Submit'}
+              </button>
+            </div>
+
+            {/* Task List */}
+            {todos && (
+              <ListTodos
+                todos={todos}
+                handleEditButton={handleEditButton}
+                handledeleteButton={handledeleteButton}
+                handleClearItems={handleClearItems}
+                handleCheckItems={handleCheckItems}
+              />
+            )}
+
+            {/* Image Box */}
+            <ImageBox />
+          </section>
+        </div>
       </div>
     </>
   );

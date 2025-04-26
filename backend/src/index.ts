@@ -14,8 +14,16 @@ import {
 import cookieParser from "cookie-parser";
 import { check, logout, signin, signup } from "./controller/userController";
 import { authMiddlewere } from "./middleware/authMiddleware";
+import businessRouter from "./Routes/BusinessRoutes";
+import path from "path";
 
 const app = express();
+
+app.use(
+  "/public/image",
+  express.static(path.join(__dirname, "../public/image"))
+);
+
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -39,6 +47,12 @@ app.put("/edititem", authMiddlewere, editItem);
 app.delete("/deleteitem", authMiddlewere, deleteItem);
 
 app.delete("/clearitems", authMiddlewere, clearItems);
+
+// --------------------------- Business ------------------------------- //
+
+app.use("/business", authMiddlewere, businessRouter);
+
+// --------------------------- Business ------------------------------- //
 
 app.listen(process.env.PORT, () => {
   console.log(`app is running on http://localhost:${process.env.PORT}/`);
